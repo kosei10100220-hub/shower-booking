@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シャワー予約システム 導入手順書｜清稜クリニック</title>
+<style>
+:root {
+  --cream: #faf6f1; --sage: #8aab8a; --sage-dark: #5d7d5d;
+  --admin: #4a6d8c; --admin-light: #dce8f0;
+  --text-dark: #3a2e28; --text-mid: #6b5448; --text-light: #9a7c6e;
+  --red: #b94040; --gold: #c4986a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif;
+  background:var(--cream); color:var(--text-dark); font-size:14px; line-height:1.8; }
+
+.header { background:white; border-bottom:3px solid var(--sage); padding:20px 40px;
+  display:flex; align-items:center; gap:16px; }
+.header-logo { font-size:22px; font-weight:700; color:var(--sage-dark); }
+.header-sub { font-size:12px; color:var(--text-light); margin-top:2px; }
+
+.toc { background:white; margin:32px auto; max-width:820px; border-radius:14px;
+  padding:24px 32px; box-shadow:0 2px 12px rgba(58,46,40,.06); }
+.toc-title { font-size:13px; font-weight:700; color:var(--text-light);
+  letter-spacing:.08em; margin-bottom:12px; }
+.toc ol { padding-left:20px; }
+.toc li { margin:5px 0; }
+.toc a { color:var(--admin); text-decoration:none; }
+.toc a:hover { text-decoration:underline; }
+
+.wrap { max-width:820px; margin:0 auto; padding:0 20px 80px; }
+
+.section { background:white; border-radius:14px; padding:28px 32px;
+  margin-bottom:28px; box-shadow:0 2px 12px rgba(58,46,40,.06); }
+
+h2 { font-size:18px; font-weight:700; color:var(--sage-dark);
+  border-left:4px solid var(--sage); padding-left:14px; margin-bottom:18px; }
+h3 { font-size:15px; font-weight:700; color:var(--text-dark); margin:20px 0 10px; }
+h4 { font-size:13px; font-weight:700; color:var(--text-mid); margin:14px 0 6px; }
+
+p { margin-bottom:12px; color:var(--text-mid); }
+
+.step { display:flex; gap:14px; align-items:flex-start; margin-bottom:18px;
+  padding:16px 20px; background:var(--cream); border-radius:10px; }
+.step-num { background:var(--sage); color:white; width:28px; height:28px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; flex-shrink:0; margin-top:1px; }
+.step-body { flex:1; }
+.step-title { font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:14px; }
+.step-desc { color:var(--text-mid); font-size:13px; line-height:1.7; }
+
+.code-block { background:#1e2229; color:#c9d1d9; border-radius:10px;
+  padding:16px 20px; font-family:'Courier New',monospace; font-size:13px;
+  line-height:1.7; margin:12px 0; overflow-x:auto; position:relative; }
+.code-block .hl { color:#79c0ff; }
+.code-block .cm { color:#8b949e; }
+.code-block .str { color:#a5d6ff; }
+
+.note { background:rgba(138,171,138,.1); border-left:3px solid var(--sage);
+  border-radius:0 8px 8px 0; padding:12px 16px; margin:12px 0;
+  font-size:13px; color:var(--text-mid); }
+.warn { background:rgba(185,64,64,.08); border-left:3px solid var(--red);
+  border-radius:0 8px 8px 0; padding:12px 16px; margin:12px 0;
+  font-size:13px; color:var(--text-mid); }
+.info { background:var(--admin-light); border-left:3px solid var(--admin);
+  border-radius:0 8px 8px 0; padding:12px 16px; margin:12px 0;
+  font-size:13px; color:#2c4a62; }
+
+.badge { display:inline-block; padding:2px 9px; border-radius:50px;
+  font-size:11px; font-weight:700; margin-right:4px; }
+.badge-free  { background:rgba(138,171,138,.2); color:var(--sage-dark); }
+.badge-req   { background:rgba(185,64,64,.12); color:var(--red); }
+.badge-new   { background:rgba(74,109,140,.15); color:var(--admin); }
+
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+th { background:var(--cream); padding:10px 14px; text-align:left;
+  font-weight:700; color:var(--text-mid); border-bottom:2px solid rgba(138,171,138,.2); }
+td { padding:10px 14px; border-bottom:1px solid rgba(138,171,138,.1);
+  color:var(--text-mid); vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+
+.img-placeholder { background:var(--cream); border:2px dashed rgba(138,171,138,.4);
+  border-radius:10px; padding:20px; text-align:center; color:var(--text-light);
+  font-size:13px; margin:12px 0; }
+
+.flow { display:flex; gap:0; align-items:stretch; flex-wrap:wrap; margin:16px 0; }
+.flow-item { flex:1; min-width:140px; background:var(--admin-light); text-align:center;
+  padding:14px 10px; font-size:12px; font-weight:700; color:var(--admin);
+  border-right:3px solid white; position:relative; }
+.flow-item:last-child { border-right:none; border-radius:0 8px 8px 0; }
+.flow-item:first-child { border-radius:8px 0 0 8px; }
+.flow-arrow { display:flex; align-items:center; padding:0 4px;
+  font-size:18px; color:var(--sage); }
+.flow-num { display:block; font-size:20px; margin-bottom:4px; }
+
+.checklist { list-style:none; padding:0; }
+.checklist li { padding:8px 0; border-bottom:1px solid rgba(138,171,138,.1);
+  display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--text-mid); }
+.checklist li:last-child { border-bottom:none; }
+.checklist li::before { content:'☐'; font-size:16px; color:var(--sage); flex-shrink:0; margin-top:-1px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-logo">🚿 シャワー予約システム 導入手順書</div>
+    <div class="header-sub">清稜クリニック｜Firebase リアルタイム同期版</div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-title">目次</div>
+  <ol>
+    <li><a href="#overview">システム構成の概要</a></li>
+    <li><a href="#firebase">Firebaseプロジェクトの作成</a></li>
+    <li><a href="#config">HTMLファイルの設定</a></li>
+    <li><a href="#hosting">Webホスティング（GitHub Pages）</a></li>
+    <li><a href="#rules">データベースのセキュリティルール設定</a></li>
+    <li><a href="#qr">QRコードの作成</a></li>
+    <li><a href="#use">スタッフの使い方</a></li>
+    <li><a href="#trouble">よくある問題と対処法</a></li>
+  </ol>
+</div>
+
+<div class="wrap">
+
+<!-- ① 概要 -->
+<div class="section" id="overview">
+  <h2>① システム構成の概要</h2>
+
+  <p>このシステムは、患者さんとスタッフが別々のデバイス（スマートフォン・PC）から同じ予約データにアクセスするために、<strong>Firebase Realtime Database</strong>を共有データベースとして使用します。</p>
+
+  <div class="flow">
+    <div class="flow-item"><span class="flow-num">📱</span>患者スマホ<br>（QRコードから）</div>
+    <div class="flow-item"><span class="flow-num">💻</span>スタッフPC<br>（URLを直接開く）</div>
+    <div class="flow-item"><span class="flow-num">☁️</span>Firebase<br>クラウドDB<br>（無料）</div>
+    <div class="flow-item"><span class="flow-num">🔄</span>リアルタイム<br>自動同期</div>
+  </div>
+
+  <table>
+    <tr><th>項目</th><th>内容</th><th>コスト</th></tr>
+    <tr><td><strong>データベース</strong></td><td>Google Firebase Realtime Database</td><td><span class="badge badge-free">無料</span>（Sparkプラン）</td></tr>
+    <tr><td><strong>ホスティング</strong></td><td>GitHub Pages（静的ファイル公開）</td><td><span class="badge badge-free">無料</span></td></tr>
+    <tr><td><strong>アクセス制限</strong></td><td>管理者タブはパスワード保護</td><td>—</td></tr>
+    <tr><td><strong>患者情報</strong></td><td>患者名・IDはデバイスローカルに保存</td><td>—</td></tr>
+  </table>
+
+  <div class="note">💡 <strong>Firebase無料枠の目安：</strong>同時接続100、1GBストレージ、1GB/月転送。クリニック規模なら無料枠内で十分です。</div>
+</div>
+
+<!-- ② Firebase -->
+<div class="section" id="firebase">
+  <h2>② Firebaseプロジェクトの作成</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">Firebase Consoleにアクセス</div>
+      <div class="step-desc"><a href="https://console.firebase.google.com" target="_blank">https://console.firebase.google.com</a> をブラウザで開き、Googleアカウントでサインインします。</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">新しいプロジェクトを作成</div>
+      <div class="step-desc">「プロジェクトを追加」をクリック → プロジェクト名を入力（例：<code>seiryo-shower</code>）→ Googleアナリティクスは「有効にしない」で構いません → 「プロジェクトを作成」をクリックして完了まで待ちます。</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">Realtime Databaseを有効化</div>
+      <div class="step-desc">
+        左メニューの「構築」→「Realtime Database」→「データベースを作成」をクリック。<br>
+        ロケーション選択：<strong>「asia-southeast1（シンガポール）」</strong>を選ぶ（東京リージョンはRTDBでは使えません）。<br>
+        セキュリティルール：<strong>「テストモードで開始」</strong>を選択 → 「有効にする」。
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">⚠️ <strong>テストモードは30日間のみ有効です。</strong>本番運用前に必ずステップ⑤のセキュリティルールに切り替えてください。</div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-title">Webアプリを登録してconfigを取得</div>
+      <div class="step-desc">
+        プロジェクトのトップ画面で「アプリを追加」→「ウェブ（&lt;/&gt;）」をクリック。<br>
+        アプリのニックネームを入力（例：<code>shower-booking</code>）→「Firebase Hostingの設定も行う」は<strong>チェック不要</strong> → 「アプリを登録」。<br>
+        次の画面に表示される<code>firebaseConfig</code>オブジェクトをコピーして保存しておきます。
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block">
+<span class="cm">// このような設定情報が表示されます（例）</span>
+<span class="hl">const</span> firebaseConfig = {
+  apiKey:            <span class="str">"AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"</span>,
+  authDomain:        <span class="str">"seiryo-shower.firebaseapp.com"</span>,
+  databaseURL:       <span class="str">"https://seiryo-shower-default-rtdb.asia-southeast1.firebasedatabase.app"</span>,
+  projectId:         <span class="str">"seiryo-shower"</span>,
+  storageBucket:     <span class="str">"seiryo-shower.appspot.com"</span>,
+  messagingSenderId: <span class="str">"123456789012"</span>,
+  appId:             <span class="str">"1:123456789012:web:abcdef1234567890"</span>
+};
+  </div>
+</div>
+
+<!-- ③ HTML設定 -->
+<div class="section" id="config">
+  <h2>③ HTMLファイルの設定（firebaseConfigを書き換える）</h2>
+
+  <p>「<strong>シャワー予約_Firebase版.html</strong>」をテキストエディタで開きます（Windowsはメモ帳、Macはテキストエディット）。</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">ファイルを開く</div>
+      <div class="step-desc">HTMLファイルを右クリック →「プログラムから開く」→「メモ帳」（Windows）または「テキストエディット」（Mac）。</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">firebaseConfigを探して書き換える</div>
+      <div class="step-desc">Ctrl+F（Mac: Cmd+F）で「<code>YOUR_API_KEY</code>」を検索。見つかったら、以下のブロックをFirebaseコンソールからコピーした実際の値に置き換えます。</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+<span class="cm">// 書き換え前（この7行を置き換える）</span>
+<span class="hl">const</span> firebaseConfig = {
+  apiKey:            <span class="str">"YOUR_API_KEY"</span>,
+  authDomain:        <span class="str">"YOUR_PROJECT_ID.firebaseapp.com"</span>,
+  databaseURL:       <span class="str">"https://YOUR_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app"</span>,
+  projectId:         <span class="str">"YOUR_PROJECT_ID"</span>,
+  storageBucket:     <span class="str">"YOUR_PROJECT_ID.appspot.com"</span>,
+  messagingSenderId: <span class="str">"YOUR_MESSAGING_SENDER_ID"</span>,
+  appId:             <span class="str">"YOUR_APP_ID"</span>
+};
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">保存して動作確認</div>
+      <div class="step-desc">ファイルを上書き保存（Ctrl+S）して、ブラウザでそのHTMLファイルを直接開いてみます。「接続中…」のローディング画面が表示され、すぐにシャワー予約画面になれば成功です。</div>
+    </div>
+  </div>
+
+  <div class="note">💡 ファイルをブラウザで直接開いた場合（file://〜）でも動作確認はできますが、<strong>別のデバイスと同期させるにはWeb公開が必要</strong>です。次のステップへ進んでください。</div>
+</div>
+
+<!-- ④ Hosting -->
+<div class="section" id="hosting">
+  <h2>④ Webホスティング（GitHub Pages）</h2>
+
+  <p>患者さんがQRコードでアクセスできるよう、インターネット上にHTMLファイルを公開します。<strong>GitHub Pages</strong>は無料で使えます。</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">GitHubアカウントを作成</div>
+      <div class="step-desc"><a href="https://github.com" target="_blank">https://github.com</a> にアクセスして「Sign up」でアカウント登録（メールアドレスがあれば無料で作成できます）。</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">新しいリポジトリを作成</div>
+      <div class="step-desc">
+        ログイン後、右上の「＋」→「New repository」。<br>
+        Repository name：<code>shower-booking</code><br>
+        Public（公開）を選択 → 「Create repository」をクリック。
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">HTMLファイルをアップロード</div>
+      <div class="step-desc">
+        作成したリポジトリ画面の「uploading an existing file」（または「Add file」→「Upload files」）をクリック。<br>
+        「<strong>シャワー予約_Firebase版.html</strong>」をドラッグ＆ドロップ。<br>
+        <strong>重要：ファイル名を <code>index.html</code> に変更</strong>してからアップロード（ファイル名フィールドで変更できます）。<br>
+        「Commit changes」をクリック。
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-title">GitHub Pagesを有効化</div>
+      <div class="step-desc">
+        リポジトリの「Settings」タブ →「Pages」（左サイドバー）。<br>
+        Source：「Deploy from a branch」を選択。<br>
+        Branch：「main」→「/(root)」→「Save」をクリック。<br>
+        数分後、<code>https://あなたのID.github.io/shower-booking/</code> でアクセスできるようになります。
+      </div>
+    </div>
+  </div>
+
+  <div class="info">📌 <strong>公開URLの例：</strong><code>https://seiryo-clinic.github.io/shower-booking/</code><br>このURLをQRコード化して患者さんに配布します。</div>
+
+  <div class="warn">⚠️ <strong>更新時：</strong>HTMLファイルを更新した場合は、GitHubのリポジトリに再度アップロードし直してください（同じファイル名でアップロードすると上書きされます）。</div>
+</div>
+
+<!-- ⑤ セキュリティルール -->
+<div class="section" id="rules">
+  <h2>⑤ データベースのセキュリティルール設定</h2>
+
+  <p>テストモードの30日間期限が切れる前に、以下のルールに変更します。病院のLAN/Wi-Fiのみからアクセス可能にする設定も含まれます。</p>
+
+  <h3>基本ルール（誰でも読み書き可能）</h3>
+  <p>もっともシンプルな設定です。URLを知っている人のみアクセスできます。</p>
+  <div class="code-block">
+{
+  <span class="str">"rules"</span>: {
+    <span class="str">".read"</span>:  <span class="hl">true</span>,
+    <span class="str">".write"</span>: <span class="hl">true</span>
+  }
+}
+  </div>
+
+  <div class="note">💡 Firebase Consoleの「Realtime Database」→「ルール」タブで上記のJSONに書き換えて「公開」ボタンをクリックします。</div>
+
+  <div class="info">🔒 <strong>より高度なセキュリティが必要な場合：</strong>Firebase Authenticationを使ったユーザー認証の導入も可能ですが、患者さんのアカウント登録が必要になります。クリニック規模では上記の基本ルール＋管理者パスワード認証（すでに実装済み）で十分です。</div>
+</div>
+
+<!-- ⑥ QRコード -->
+<div class="section" id="qr">
+  <h2>⑥ QRコードの作成</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">無料QRコード生成サイトを使用</div>
+      <div class="step-desc">
+        <a href="https://qr.quel.jp/" target="_blank">https://qr.quel.jp/</a> や <a href="https://www.qr-creator.com/jp/" target="_blank">https://www.qr-creator.com/jp/</a> などにアクセス。<br>
+        GitHub PagesのURL（例：<code>https://seiryo-clinic.github.io/shower-booking/</code>）を入力してQRコードを生成。<br>
+        PNG形式でダウンロードします。
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">掲示物の作成と設置</div>
+      <div class="step-desc">
+        WordやPowerPointにQRコードを貼り付け、「シャワーのご予約はこちら」などの案内文を追加して印刷。<br>
+        シャワー室の前、待合室、受付カウンターなど、患者さんの目に留まる場所に設置します。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ 使い方 -->
+<div class="section" id="use">
+  <h2>⑦ スタッフの使い方</h2>
+
+  <h3>患者さんへの案内</h3>
+  <table>
+    <tr><th>手順</th><th>内容</th></tr>
+    <tr><td>①</td><td>スマートフォンでQRコードを読み取りサイトを開く</td></tr>
+    <tr><td>②</td><td>初回のみ「お名前」と「患者ID・部屋番号」を設定する（デバイスに保存され次回以降は不要）</td></tr>
+    <tr><td>③</td><td>希望の日付・時間・シャワー室を選んで「予約する」</td></tr>
+    <tr><td>④</td><td>「あなたの予約一覧」でいつでも予約確認・キャンセルが可能</td></tr>
+  </table>
+
+  <h3>スタッフ（管理者）の操作</h3>
+  <table>
+    <tr><th>機能</th><th>操作方法</th></tr>
+    <tr><td>管理画面を開く</td><td>右上の「🔧 管理者」タブをクリック → パスワード入力（初期値：<strong>1234</strong>）</td></tr>
+    <tr><td>代理予約の登録</td><td>「📊 当日の予約」タブ →「＋ 代理予約」ボタン</td></tr>
+    <tr><td>予約の削除</td><td>各タブの予約一覧の「削除」ボタン</td></tr>
+    <tr><td>シャワー室を一日使用不可にする</td><td>「🚫 使用停止設定」タブ → 該当日を選び「A室を使用不可」などをクリック</td></tr>
+    <tr><td>特定時間帯を停止</td><td>「🚫 使用停止設定」タブ → 枠をクリックしてON/OFF</td></tr>
+    <tr><td>パスワード変更</td><td>「🔑 パスワード変更」タブ</td></tr>
+  </table>
+
+  <div class="warn">⚠️ <strong>パスワード変更について：</strong>管理者パスワードは各デバイスのブラウザに保存されます。パスワードを変更した場合、他のスタッフのPCでも変更後のパスワードが必要になりますので、変更後は必ず周知してください。</div>
+</div>
+
+<!-- ⑧ トラブル -->
+<div class="section" id="trouble">
+  <h2>⑧ よくある問題と対処法</h2>
+
+  <table>
+    <tr><th>症状</th><th>原因・対処法</th></tr>
+    <tr><td>「接続中…」から画面が変わらない</td><td>firebaseConfigの設定が間違っているか、インターネット接続がない。ブラウザのデベロッパーツール（F12）でエラーメッセージを確認。</td></tr>
+    <tr><td>「firebaseConfigを設定してください」と表示される</td><td>HTMLファイルの<code>YOUR_API_KEY</code>部分が書き換えられていない。手順③を再確認。</td></tr>
+    <tr><td>予約したのに他のデバイスに反映されない</td><td>両方のデバイスがインターネットに接続されているか確認。FirebaseのRealtime DatabaseのConsoleでデータが書き込まれているか確認。</td></tr>
+    <tr><td>「データベースのアクセスが拒否されました」</td><td>Firebaseのセキュリティルールの30日間テストモード期限が切れた可能性。手順⑤に従いルールを更新する。</td></tr>
+    <tr><td>スマホでレイアウトが崩れる</td><td>ブラウザのズーム設定をリセット（100%に）。または別のブラウザ（Chrome推奨）を試す。</td></tr>
+    <tr><td>QRコードを読み取れない</td><td>QRコードが小さすぎる可能性。印刷サイズを大きく（最低3cm×3cm以上）する。</td></tr>
+  </table>
+
+  <h3>Firebaseコンソールでデータを直接確認する方法</h3>
+  <p>予約データが正しく保存されているかは、Firebase Console（<a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a>）→ プロジェクト → Realtime Database → 「データ」タブで確認できます。</p>
+  <p>また、誤って登録された予約データはコンソール上で直接削除することも可能です。</p>
+
+  <h3>お問い合わせ・更新について</h3>
+  <ul style="padding-left:20px;color:var(--text-mid);font-size:13px;line-height:2">
+    <li>システムの機能追加・改修が必要な場合はClaudeにHTMLファイルと変更内容を共有してください。</li>
+    <li>データのバックアップ：Firebase Consoleの「データのエクスポート」機能からJSONで出力可能です。</li>
+    <li>Firebaseの無料枠を超えた場合は有料プランへの移行が必要です（通常のクリニック規模では不要）。</li>
+  </ul>
+</div>
+
+<!-- 最終チェックリスト -->
+<div class="section">
+  <h2>✅ 導入完了チェックリスト</h2>
+  <ul class="checklist">
+    <li>Googleアカウントを用意した</li>
+    <li>Firebase プロジェクトを作成した</li>
+    <li>Realtime Database を有効化した（テストモード）</li>
+    <li>Webアプリを登録して <code>firebaseConfig</code> を取得した</li>
+    <li>「シャワー予約_Firebase版.html」の <code>firebaseConfig</code> を書き換えた</li>
+    <li>ブラウザで開いて予約画面が正常に表示されることを確認した</li>
+    <li>GitHubアカウントを作成し、<code>index.html</code> としてアップロードした</li>
+    <li>GitHub Pagesを有効化し、公開URLでアクセスできることを確認した</li>
+    <li>2台の別デバイスから同じURLにアクセスして、予約データが同期されることを確認した</li>
+    <li>QRコードを生成して印刷・設置した</li>
+    <li>スタッフへのパスワード（初期値：1234）を周知した</li>
+    <li>テストモードの30日後までにセキュリティルールを更新した</li>
+  </ul>
+</div>
+
+</div><!-- /wrap -->
+</body>
+</html>
